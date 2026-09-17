@@ -11,7 +11,7 @@ be read alongside the article, not instead of it.
 
 | # | Section | Project | Article | Code |
 |---|---------|---------|---------|------|
-| KA01 | Kubernetes + AI | Kubernetes AI Assistant | [Read](https://techworldwithsahana.substack.com/p/d75a91ad-33ea-4458-a10d-7231e9673801?postPreview=free&updated=2026-09-16T17%3A24%3A05.043Z&audience=everyone&free_preview=false&freemail=true) | [`001-kubernetes-ai/KA-01-kubernetes-ai-assistant`](./001-kubernetes-ai/KA-01-kubernetes-ai-assistant) |
+| KA01 | Kubernetes + AI | Kubernetes AI Assistant | <a href="https://techworldwithsahana.substack.com/p/d75a91ad-33ea-4458-a10d-7231e9673801?postPreview=free&updated=2026-09-16T17%3A24%3A05.043Z&audience=everyone&free_preview=false&freemail=true"><img src="https://img.shields.io/badge/📖%20READ-F5EEDC?style=for-the-badge&labelColor=12372A" /></a> | [`001-kubernetes-ai/KA01-kubernetes-ai-assistant`](./001-kubernetes-ai/KA01-kubernetes-ai-assistant) |
 
 More sections and projects are added as new articles are published.
 
