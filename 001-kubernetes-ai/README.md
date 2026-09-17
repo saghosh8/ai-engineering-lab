@@ -10,7 +10,7 @@ genuinely benefits from a model.
 
 | ID | Project | Article |
 |----|---------|---------|
-| KA01 | [Kubernetes AI Assistant](./KA-01-kubernetes-ai-assistant) | [Your Pod Keeps Crashing. What If an LLM Could Read the Logs Before You Do?](https://techworldwithsahana.substack.com/p/d75a91ad-33ea-4458-a10d-7231e9673801?postPreview=free&updated=2026-09-16T17%3A24%3A05.043Z&audience=everyone&free_preview=false&freemail=true) |
+| KA01 | [Kubernetes AI Assistant](./KA01-kubernetes-ai-assistant) | <a href="https://techworldwithsahana.substack.com/p/d75a91ad-33ea-4458-a10d-7231e9673801?postPreview=free&updated=2026-09-16T17%3A24%3A05.043Z&audience=everyone&free_preview=false&freemail=true"><img src="https://img.shields.io/badge/📖%20READ%20THE%20ARTICLE-F5EEDC?style=for-the-badge&labelColor=12372A" /></a> |
 
 More projects in this section are added as new articles are published.
 
