@@ -4,8 +4,9 @@ Give an LLM controlled, read-only access to `kubectl` output and let it
 correlate pod status, events and logs into ranked troubleshooting
 hypotheses — evidence and interpretation kept clearly separate.
 
-Companion code for the newsletter: *"Your Pod Keeps Crashing. What If
-an LLM Could Read the Logs Before You Do?"*
+📖 Companion article: [Your Pod Keeps Crashing. What If an LLM Could Read the Logs Before You Do? — KA01](https://techworldwithsahana.substack.com/p/d75a91ad-33ea-4458-a10d-7231e9673801?postPreview=free&updated=2026-09-16T17%3A24%3A05.043Z&audience=everyone&free_preview=false&freemail=true)
+
+![KA01 architecture](../images/KA01)
 
 ## What this is
 
@@ -114,3 +115,18 @@ prompt instruction.
 - Redaction is keyword-based (`PASSWORD`, `SECRET`, `TOKEN`, `KEY`,
   `CREDENTIAL`, `DSN`). Extend `REDACT_KEYWORDS` in `context.py` for
   your own naming conventions before pointing this at anything real.
+
+---
+
+## ⭐ Support
+
+If you found this repository useful:
+
+<a href="https://github.com/saghosh8/ai-engineering-lab">
+  <img src="https://img.shields.io/github/stars/saghosh8/ai-engineering-lab?style=for-the-badge&logo=github&logoColor=white&label=STAR%20THIS%20REPO" />
+</a>
+<a href="https://github.com/saghosh8/ai-engineering-lab/fork">
+  <img src="https://img.shields.io/github/forks/saghosh8/ai-engineering-lab?style=for-the-badge&logo=github&label=FORK" />
+</a>
+
+---
