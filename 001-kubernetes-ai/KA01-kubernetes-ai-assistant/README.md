@@ -4,7 +4,11 @@ Give an LLM controlled, read-only access to `kubectl` output and let it
 correlate pod status, events and logs into ranked troubleshooting
 hypotheses — evidence and interpretation kept clearly separate.
 
-📖 Read the article to understand the concepts behind this build: [Your Pod Keeps Crashing. What If an LLM Could Read the Logs Before You Do? — KA01](https://techworldwithsahana.substack.com/p/d75a91ad-33ea-4458-a10d-7231e9673801?postPreview=free&updated=2026-09-16T17%3A24%3A05.043Z&audience=everyone&free_preview=false&freemail=true)
+<a href="https://techworldwithsahana.substack.com/p/d75a91ad-33ea-4458-a10d-7231e9673801?postPreview=free&updated=2026-09-16T17%3A24%3A05.043Z&audience=everyone&free_preview=false&freemail=true">
+  <img src="https://img.shields.io/badge/📖%20READ%20THE%20ARTICLE-KA01-12372A?style=for-the-badge" />
+</a>
+
+Understand the concepts behind this build: *Your Pod Keeps Crashing. What If an LLM Could Read the Logs Before You Do?*
 
 ![KA01 architecture](../images/KA01.png)
 
