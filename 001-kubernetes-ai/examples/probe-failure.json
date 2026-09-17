@@ -1,0 +1,35 @@
+{
+  "phase": "Running",
+  "restart_count": 6,
+  "current_state": "{'running': {'started_at': '2026-09-16T09:44:12Z'}}",
+  "last_terminated": { "exit_code": 0, "reason": "Completed" },
+  "image": "registry.internal/payments/checkout-api:2.3.9",
+  "resources": {
+    "limits": { "memory": "512Mi", "cpu": "1" },
+    "requests": { "memory": "256Mi", "cpu": "500m" }
+  },
+  "liveness_probe": {
+    "http_get": { "path": "/health", "port": 8080 },
+    "timeout_seconds": 1,
+    "period_seconds": 5,
+    "failure_threshold": 1
+  },
+  "readiness_probe": {
+    "http_get": { "path": "/ready", "port": 8080 },
+    "timeout_seconds": 1,
+    "period_seconds": 5
+  },
+  "env_names": [
+    "SPRING_PROFILES_ACTIVE",
+    "DB_HOST",
+    "DB_PASSWORD=<redacted>",
+    "THREAD_POOL_SIZE"
+  ],
+  "events": [
+    "Warning Unhealthy: Liveness probe failed: Get \"http://10.4.2.18:8080/health\": context deadline exceeded",
+    "Normal Killing: Container checkout-api failed liveness probe, will be restarted",
+    "Warning Unhealthy: Liveness probe failed: Get \"http://10.4.2.18:8080/health\": context deadline exceeded",
+    "Normal Killing: Container checkout-api failed liveness probe, will be restarted"
+  ],
+  "logs": "... [180 lines omitted] ...\n2026-09-16T09:50:02.001Z  INFO 1 --- [http-nio-8080-exec-3] c.p.OrderController : Processing bulk export request, 45000 rows\n2026-09-16T09:50:06.812Z  INFO 1 --- [http-nio-8080-exec-3] c.p.OrderController : Bulk export query still running\n2026-09-16T09:50:07.001Z  WARN  1 --- [http-nio-8080-exec-3] c.p.OrderController : Request took 5000ms, GC pressure high\n2026-09-16T09:50:07.334Z  INFO 1 --- [Thread-9] o.s.b.a.SIGTERM handler : Received SIGTERM, shutting down\n<log ends: pod killed by kubelet, not an application crash>"
+}

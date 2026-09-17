@@ -1,0 +1,34 @@
+{
+  "phase": "Running",
+  "restart_count": 14,
+  "current_state": "{'running': {'started_at': '2026-09-16T02:11:04Z'}}",
+  "last_terminated": { "exit_code": 137, "reason": "OOMKilled" },
+  "image": "registry.internal/payments/checkout-api:2.4.1",
+  "resources": {
+    "limits": { "memory": "256Mi", "cpu": "500m" },
+    "requests": { "memory": "128Mi", "cpu": "250m" }
+  },
+  "liveness_probe": {
+    "http_get": { "path": "/health", "port": 8080 },
+    "timeout_seconds": 1,
+    "period_seconds": 10
+  },
+  "readiness_probe": {
+    "http_get": { "path": "/ready", "port": 8080 },
+    "timeout_seconds": 1,
+    "period_seconds": 5
+  },
+  "env_names": [
+    "SPRING_PROFILES_ACTIVE",
+    "DB_HOST",
+    "DB_PASSWORD=<redacted>",
+    "JAVA_TOOL_OPTIONS"
+  ],
+  "events": [
+    "Normal Pulled: Container image \"checkout-api:2.4.1\" already present on machine",
+    "Normal Created: Created container checkout-api",
+    "Normal Started: Started container checkout-api",
+    "Warning BackOff: Back-off restarting failed container checkout-api in pod checkout-api-7d9f8b6c5-xk2mz_payments"
+  ],
+  "logs": "... [230 lines omitted] ...\n2026-09-16T02:10:58.112Z  INFO 1 --- [main] c.p.CheckoutApplication : Starting CheckoutApplication v2.4.1 using Java 17.0.9\n2026-09-16T02:10:59.884Z  INFO 1 --- [main] o.a.catalina.core.StandardService : Tomcat started on port 8080\n2026-09-16T02:11:00.203Z  INFO 1 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator : Initialized JPA EntityManagerFactory\n2026-09-16T02:11:04.417Z  INFO 1 --- [main] c.p.CheckoutApplication : Started CheckoutApplication in 6.2 seconds\n<log ends abruptly, no shutdown or exception logged>"
+}
