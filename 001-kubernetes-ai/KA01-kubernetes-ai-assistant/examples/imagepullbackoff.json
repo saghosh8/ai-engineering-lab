@@ -1,0 +1,31 @@
+{
+  "phase": "Pending",
+  "restart_count": 0,
+  "current_state": "{'waiting': {'reason': 'ImagePullBackOff'}}",
+  "last_terminated": null,
+  "image": "registry.internal/payments/checkout-api:2.4.2-rc1",
+  "resources": {
+    "limits": { "memory": "256Mi", "cpu": "500m" },
+    "requests": { "memory": "128Mi", "cpu": "250m" }
+  },
+  "liveness_probe": {
+    "http_get": { "path": "/health", "port": 8080 },
+    "timeout_seconds": 1,
+    "period_seconds": 10
+  },
+  "readiness_probe": null,
+  "env_names": [
+    "SPRING_PROFILES_ACTIVE",
+    "DB_HOST",
+    "DB_PASSWORD=<redacted>"
+  ],
+  "events": [
+    "Normal Scheduled: Successfully assigned payments/checkout-api-7d9f8b6c5-p2m9k to node-worker-14",
+    "Normal Pulling: Pulling image \"registry.internal/payments/checkout-api:2.4.2-rc1\"",
+    "Warning Failed: Failed to pull image \"registry.internal/payments/checkout-api:2.4.2-rc1\": rpc error: code = NotFound desc = manifest unknown",
+    "Warning Failed: Error: ErrImagePull",
+    "Normal BackOff: Back-off pulling image \"registry.internal/payments/checkout-api:2.4.2-rc1\"",
+    "Warning Failed: Error: ImagePullBackOff"
+  ],
+  "logs": "<unavailable: container has not started>"
+}
