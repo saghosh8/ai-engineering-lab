@@ -8,7 +8,7 @@ Each folder below corresponds to a newsletter article. Code is meant to
 be read alongside the article, not instead of it.
 
 <a href="https://techworldwithsahana.substack.com/embed">
-  <img src="https://img.shields.io/badge/Subscribe%20to%20AI%2BDevOps%20Newsletter-12372A?style=for-the-badge&labelColor=F5EEDC&color=12372A" alt="Subscribe to AI+DevOps Newsletter">
+  <img src="https://img.shields.io/badge/Subscribe%20to%20AI%2BDevOps%20Newsletter-12372A?style=for-the-badge&labelColor=F5EEDC&color=12372A" alt="Subscribe to AIxDevOps Newsletter">
 </a>
 
 ## Index
