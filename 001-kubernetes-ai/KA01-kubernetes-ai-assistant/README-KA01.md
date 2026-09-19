@@ -1,4 +1,4 @@
-# 001 — Kubernetes AI Assistant
+# KA01 — Kubernetes AI Assistant
 
 Give an LLM controlled, read-only access to `kubectl` output and let it
 correlate pod status, events and logs into ranked troubleshooting
