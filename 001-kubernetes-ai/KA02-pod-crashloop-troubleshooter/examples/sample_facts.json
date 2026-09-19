@@ -1,0 +1,26 @@
+{
+  "pod_name": "payment-worker-7d9f8c-xk2p1",
+  "namespace": "payments",
+  "phase": "Running",
+  "restart_count": 6,
+  "exit_code": 1,
+  "reason": "Error",
+  "started_at": "2026-09-17T22:10:03Z",
+  "finished_at": "2026-09-17T22:10:11Z",
+  "resource_limits": {
+    "cpu": "500m",
+    "memory": "256Mi"
+  },
+  "recent_events": [
+    {
+      "reason": "Pulled",
+      "message": "Successfully pulled image \"payments/worker:1.4.2\"",
+      "time": "2026-09-17T22:09:58Z"
+    },
+    {
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container",
+      "time": "2026-09-17T22:10:12Z"
+    }
+  ]
+}
