@@ -1,0 +1,8 @@
+2026-09-17T22:10:03Z INFO  starting worker, version=1.4.2
+2026-09-17T22:10:03Z INFO  connecting to postgres://db-primary:5432/payments
+2026-09-17T22:10:05Z ERROR psycopg2.OperationalError: could not connect to server: Connection timed out
+2026-09-17T22:10:05Z INFO  retrying in 2s...
+2026-09-17T22:10:07Z ERROR psycopg2.OperationalError: could not connect to server: Connection timed out
+2026-09-17T22:10:07Z INFO  retrying in 2s...
+2026-09-17T22:10:09Z ERROR psycopg2.OperationalError: could not connect to server: Connection timed out
+2026-09-17T22:10:11Z FATAL max retries exceeded, exiting
