@@ -1,4 +1,4 @@
-# 001 — Kubernetes AI Assistant
+# KA01 — Kubernetes AI Assistant
 
 Give an LLM controlled, read-only access to `kubectl` output and let it
 correlate pod status, events and logs into ranked troubleshooting
@@ -10,7 +10,7 @@ hypotheses — evidence and interpretation kept clearly separate.
 
 Understand the concepts behind this build: *Your Pod Keeps Crashing. What If an LLM Could Read the Logs Before You Do?*
 
-![KA01 architecture](../images/KA01.png)
+![KA01 architecture](../images/KA01.jpg)
 
 ## What this is
 
