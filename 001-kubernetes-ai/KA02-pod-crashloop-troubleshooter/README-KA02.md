@@ -9,7 +9,7 @@ interpretation kept clearly separate.
 
 Understand the concepts behind this build: *Your Pod Just Crashed for the Fifth Time — Here's How to Get an AI to Explain Why.*
 
-[![KA02 architecture](https://github.com/saghosh8/ai-engineering-lab/raw/main/001-kubernetes-ai/images/KA02.png)](/saghosh8/ai-engineering-lab/blob/main/001-kubernetes-ai/images/KA02.png)
+[![KA02 architecture](https://github.com/saghosh8/ai-engineering-lab/raw/main/001-kubernetes-ai/images/KA02.jpg)](/saghosh8/ai-engineering-lab/blob/main/001-kubernetes-ai/images/KA02.jpg)
 
 ## What this is
 
