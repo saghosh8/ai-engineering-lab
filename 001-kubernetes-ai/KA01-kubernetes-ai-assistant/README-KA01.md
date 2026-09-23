@@ -4,7 +4,7 @@ Give an LLM controlled, read-only access to `kubectl` output and let it
 correlate pod status, events and logs into ranked troubleshooting
 hypotheses — evidence and interpretation kept clearly separate.
 
-<a href="https://techworldwithsahana.substack.com/p/building-an-llm-debugger-for-kubernetes">
+<a href="https://techworldwithsahana.substack.com/p/llm-kubernetes-debugger-crashloopbackoff">
   <img src="https://img.shields.io/badge/📖%20READ%20THE%20ARTICLE-KA01-F5EEDC?style=for-the-badge&labelColor=12372A" />
 </a>
 
