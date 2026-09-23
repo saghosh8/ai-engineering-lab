@@ -5,7 +5,7 @@ correlate the structured signals with the free-text log evidence into a
 single, confidence-rated root-cause hypothesis — evidence and
 interpretation kept clearly separate.
 
-[![Substack](https://img.shields.io/badge/%F0%9F%93%96%20READ%20THE%20ARTICLE-KA02-F5EEDC?style=for-the-badge&labelColor=1237A)](https://techworldwithsahana.substack.com/p/building-an-ai-troubleshooting-assistant-for-kubernetes)
+[![Substack](https://img.shields.io/badge/%F0%9F%93%96%20READ%20THE%20ARTICLE-KA02-F5EEDC?style=for-the-badge&labelColor=1237A)](https://techworldwithsahana.substack.com/p/kubernetes-ai-troubleshooter-crashloopbackoff)
 
 Understand the concepts behind this build: *Your Pod Just Crashed for the Fifth Time — Here's How to Get an AI to Explain Why.*
 
