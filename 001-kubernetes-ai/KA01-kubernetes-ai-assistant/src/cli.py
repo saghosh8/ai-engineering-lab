@@ -21,8 +21,11 @@ import argparse
 import json
 import sys
 
+from dotenv import load_dotenv
+from kubernetes.client.exceptions import ApiException
+
 from src import collector, context
-from src.analyzer import call_llm, verify_evidence_grounding
+from src.analyzer import AnalysisError, call_llm, verify_evidence_grounding
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -53,9 +56,12 @@ def print_report(evidence: dict, analysis) -> None:
     print("\n" + "=" * 70)
     print("EVIDENCE (observed facts)")
     print("=" * 70)
+    print(f"container:      {evidence['container']}")
     print(f"phase:          {evidence['phase']}")
     print(f"restart_count:  {evidence['restart_count']}")
     print(f"last_terminated: {evidence['last_terminated']}")
+    print(f"current_state:  {evidence['current_state']}")
+    print(f"logs_source:    {evidence['logs_source']}")
     print(f"image:          {evidence['image']}")
     print(f"resources:      {evidence['resources']}")
 
@@ -67,7 +73,8 @@ def print_report(evidence: dict, analysis) -> None:
     for i, hyp in enumerate(analysis.hypotheses, 1):
         print(f"Hypothesis {i} — {hyp.cause} — confidence: {hyp.confidence}")
         for ev in hyp.evidence:
-            print(f"  evidence: {ev}")
+            flag = "  (UNVERIFIED)" if ev in hyp.unverified_evidence else ""
+            print(f"  evidence: {ev}{flag}")
         for step in hyp.next_steps:
             print(f"  next step: {step}")
         print()
@@ -84,15 +91,32 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "investigate":
-        v1 = collector.load_client(in_cluster=args.in_cluster)
-        raw = collector.collect(v1, name=args.pod, namespace=args.namespace)
+        load_dotenv()
+
+        try:
+            v1 = collector.load_client(in_cluster=args.in_cluster)
+            raw = collector.collect(v1, name=args.pod, namespace=args.namespace)
+        except ApiException as e:
+            print(
+                f"Kubernetes API error ({e.status} {e.reason}) for pod "
+                f"{args.namespace}/{args.pod}. Check the name, namespace and RBAC.",
+                file=sys.stderr,
+            )
+            return 1
         evidence = context.build_evidence(raw)
 
         if args.save_evidence:
             with open(args.save_evidence, "w") as f:
                 json.dump(evidence, f, indent=2)
 
-        analysis = call_llm(evidence)
+        try:
+            analysis = call_llm(evidence)
+        except AnalysisError as e:
+            path = args.save_evidence or "./evidence.json"
+            with open(path, "w") as f:
+                json.dump(evidence, f, indent=2)
+            print(f"AI analysis failed: {e}\nEvidence saved to {path}", file=sys.stderr)
+            return 1
         analysis = verify_evidence_grounding(analysis, evidence)
 
         print_report(evidence, analysis)

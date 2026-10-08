@@ -40,6 +40,10 @@ def print_result(result: TroubleshootResult) -> None:
     for item in d.evidence:
         print(f"  - {item}")
     print(f"Next step        : {d.recommended_next_step}")
+    if d.unverified_evidence:
+        print("\n!! Could not find these cited items in the evidence (possible hallucination):")
+        for item in d.unverified_evidence:
+            print(f"  - {item}")
     print()
 
 

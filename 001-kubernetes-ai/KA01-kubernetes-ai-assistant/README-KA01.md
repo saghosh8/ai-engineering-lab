@@ -37,8 +37,11 @@ KA01-kubernetes-ai-assistant/
 ├── src/
 │   ├── collector.py    # Kubernetes API calls (read-only)
 │   ├── context.py      # field extraction, redaction, truncation
-│   ├── analyzer.py     # LLM call, schema validation, evidence check
+│   ├── redactor.py     # regex secret/PII redaction (logs + events)
+│   ├── analyzer.py     # LLM call, schema validation
+│   ├── grounding.py    # evidence-citation check (anti-hallucination)
 │   └── cli.py           # entry point
+├── tests/               # pytest, no cluster or API key needed
 ├── examples/            # saved evidence bundles for offline testing
 │   ├── oomkilled.json
 │   ├── imagepullbackoff.json
@@ -52,7 +55,7 @@ KA01-kubernetes-ai-assistant/
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   # add -r requirements-dev.txt to run tests
 cp .env.example .env   # fill in ANTHROPIC_API_KEY
 ```
 
@@ -88,6 +91,16 @@ analysis = verify_evidence_grounding(analysis, evidence)
 print(analysis.summary)
 ```
 
+## Running the tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+The tests build real `kubernetes` client objects and fake the model, so
+they need neither a cluster nor an API key.
+
 ## Required RBAC (in-cluster deployment)
 
 This tool should never run with more access than it needs:
@@ -111,14 +124,23 @@ prompt instruction.
 
 ## Known limitations
 
-- Single-pod scope only. Doesn't (yet) look at Deployment/ReplicaSet
+- Single-pod, single-container scope. For multi-container pods the tool
+  picks the container that has crashed / is waiting / restarted most
+  (so a crash-looping sidecar is found), but it does not correlate
+  across containers. Doesn't (yet) look at Deployment/ReplicaSet
   history or sibling pods.
 - No caching — repeated investigations of the same pod re-call the
   model. See "How This Could Evolve" in the newsletter for the
   production-hardening path.
-- Redaction is keyword-based (`PASSWORD`, `SECRET`, `TOKEN`, `KEY`,
-  `CREDENTIAL`, `DSN`). Extend `REDACT_KEYWORDS` in `context.py` for
-  your own naming conventions before pointing this at anything real.
+- Redaction is regex-based (`redactor.py`): passwords/tokens/secrets in
+  `key=value` and JSON form, bearer tokens, JWTs, URL credentials, AWS
+  keys, private keys, emails. It is a safety net, not a guarantee —
+  extend the patterns for your own naming conventions and review the
+  evidence (`--save-evidence`) before pointing this at anything real.
+- The grounding check is a heuristic: it catches invented log lines and
+  values, not wrong reasoning from real evidence. Unverified citations
+  are flagged in the report, never silently dropped.
+- Model defaults to `claude-sonnet-4-6`; override with `ANTHROPIC_MODEL`.
 
 ---
 
