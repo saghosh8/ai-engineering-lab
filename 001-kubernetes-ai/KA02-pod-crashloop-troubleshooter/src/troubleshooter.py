@@ -10,7 +10,8 @@ from pydantic import ValidationError
 
 from src import k8s_client
 from src.extractor import extract_facts
-from src.llm_client import diagnose
+from src.extractor import pick_container_status
+from src.llm_client import LLMOutputError, diagnose
 from src.models import Diagnosis
 from src.redactor import redact
 
@@ -39,9 +40,18 @@ def investigate_pod(namespace: str, pod_name: str, tail_lines: int = 100,
 
     pod = k8s_client.get_pod(namespace, pod_name)
     events = k8s_client.get_events(namespace, pod_name)
-    raw_logs = k8s_client.get_logs(namespace, pod_name, tail_lines=tail_lines)
+
+    # Pull logs from the container that is actually crashing, not just the first.
+    status = pick_container_status(pod)
+    raw_logs, logs_source = k8s_client.get_logs(
+        namespace, pod_name,
+        container=status.name if status else None,
+        tail_lines=tail_lines,
+    )
 
     facts = extract_facts(pod, events)
+    # Tell the model whether these are the crashed run's logs or the current run's.
+    facts["logs_source"] = logs_source
     log_excerpt = redact(raw_logs)
 
     return _run_diagnosis(facts, log_excerpt)
@@ -59,7 +69,7 @@ def _run_diagnosis(facts: Dict[str, Any], log_excerpt: str) -> TroubleshootResul
     try:
         result = diagnose(facts, log_excerpt)
         return TroubleshootResult(facts, log_excerpt, diagnosis=result)
-    except ValidationError as e:
+    except (ValidationError, LLMOutputError) as e:
         return TroubleshootResult(facts, log_excerpt, error=f"Model response failed validation: {e}")
     except Exception as e:
         return TroubleshootResult(facts, log_excerpt, error=f"LLM call failed: {e}")

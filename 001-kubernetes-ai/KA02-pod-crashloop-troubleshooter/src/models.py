@@ -24,3 +24,8 @@ class Diagnosis(BaseModel):
     recommended_next_step: str = Field(
         ..., description="One concrete, verifiable action for the engineer to take"
     )
+    # Filled in by our code after the call (grounding.py), never by the model.
+    unverified_evidence: List[str] = Field(
+        default_factory=list,
+        description="Cited evidence that could not be found in the input",
+    )

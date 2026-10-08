@@ -38,10 +38,12 @@ KA02-pod-crashloop-troubleshooter/
 │   ├── k8s_client.py     # Kubernetes API calls (read-only)
 │   ├── extractor.py      # deterministic fact extraction
 │   ├── redactor.py       # secret/PII redaction
+│   ├── grounding.py      # evidence-citation check (anti-hallucination)
 │   ├── llm_client.py     # LLM call, prompt, schema hint
 │   ├── models.py         # Pydantic schema for the diagnosis
 │   ├── troubleshooter.py # pipeline orchestration
 │   └── cli.py            # entry point
+├── tests/                 # pytest, no cluster or API key needed
 ├── examples/              # sample evidence for offline testing
 │   ├── sample_facts.json
 │   ├── sample_logs.txt
@@ -55,7 +57,7 @@ KA02-pod-crashloop-troubleshooter/
 ```
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   # add -r requirements-dev.txt to run tests
 cp .env.example .env   # fill in ANTHROPIC_API_KEY
 ```
 
@@ -87,6 +89,16 @@ python examples/demo.py
 This still makes a real call to the Anthropic API — it skips the
 Kubernetes dependency, not the LLM one. `ANTHROPIC_API_KEY` must be set.
 
+## Running the tests
+
+```
+pip install -r requirements-dev.txt
+pytest
+```
+
+The tests build real `kubernetes` client objects and fake the model, so
+they need neither a cluster nor an API key.
+
 ## Required RBAC (real cluster usage)
 
 This tool should never run with more access than it needs:
@@ -111,14 +123,24 @@ prompt instruction.
 
 ## Known limitations
 
-- Single-pod scope only. Doesn't look at Deployment/ReplicaSet history
-  or sibling pods in the same failure.
+- Single-pod, single-container scope. For multi-container pods the tool
+  picks the container that has crashed / is waiting / restarted most
+  (so a crash-looping sidecar is found). Doesn't look at
+  Deployment/ReplicaSet history or sibling pods in the same failure.
 - Single LLM call, no retries with alternate prompts, no multi-step
   investigation.
-- Redaction is regex-based (tokens, connection-string passwords, AWS
-  keys, generic secrets, emails). Extend the patterns in
-  `redactor.py` for your own naming conventions before pointing this
-  at anything real.
+- Logs come from the previous (crashed) container run when one exists;
+  otherwise the current run's. Which one is recorded in the facts as
+  `logs_source` so the model knows what it is reading.
+- Redaction is regex-based (`redactor.py`): passwords/tokens/secrets in
+  `key=value` and JSON form, bearer tokens, JWTs, URL credentials, AWS
+  keys, private keys, emails. It is a safety net, not a guarantee —
+  extend the patterns for your own naming conventions before pointing
+  this at anything real.
+- Cited evidence is checked against the input (`grounding.py`);
+  anything that can't be found is listed as possible hallucination. It
+  is a heuristic: it catches invented lines, not faulty reasoning.
+- Model defaults to `claude-sonnet-4-6`; override with `ANTHROPIC_MODEL`.
 - No auto-remediation of any kind — output is advisory only, by design.
 
 ---

@@ -5,7 +5,7 @@ Deterministic, read-only Kubernetes data collection.
 No AI here — just three API calls:
   1. Pod object (status, spec, resources, probes)
   2. Events scoped to that pod
-  3. Logs (current, and previous if the pod has restarted)
+  3. Logs (previous run if the pod has restarted, else current)
 
 This module never writes to the cluster. The ServiceAccount used to run
 this tool should only ever be granted get/list/watch on pods, events,
@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from kubernetes import client, config
 from kubernetes.client.exceptions import ApiException
+
+from src.context import pick_container_status
 
 
 def load_client(in_cluster: bool = False) -> client.CoreV1Api:
@@ -49,30 +51,37 @@ def collect(v1: client.CoreV1Api, name: str, namespace: str) -> dict:
         field_selector=f"involvedObject.name={name}",
     ).items
 
-    logs = _fetch_logs(v1, name, namespace, pod)
+    logs, logs_source = _fetch_logs(v1, name, namespace, pod)
 
-    return {"pod": pod, "events": events, "logs": logs}
+    return {"pod": pod, "events": events, "logs": logs, "logs_source": logs_source}
 
 
-def _fetch_logs(v1: client.CoreV1Api, name: str, namespace: str, pod) -> str:
-    """Fetch logs, preferring the previous container instance on restart.
+def _fetch_logs(v1: client.CoreV1Api, name: str, namespace: str, pod) -> tuple[str, str]:
+    """Fetch logs from the container under investigation.
 
-    A pod that has never restarted has no previous container, and the
-    API returns HTTP 400 for that case. That is an expected state, not
-    a failure — we record it and move on rather than raising.
+    Returns (text, source), source being "previous", "current" or
+    "unavailable". The crashed run's logs are what we want; HTTP 400
+    means "no previous container", which is an expected state, so we
+    fall back to current logs and say so. Any other API error (403,
+    404, 5xx) is a real problem and propagates instead of being
+    reported to the model as if it were evidence.
     """
-    if not pod.status.container_statuses:
-        return "<unavailable: container has not started>"
+    status = pick_container_status(pod)
+    if status is None:
+        return "<unavailable: container has not started>", "unavailable"
 
-    status = pod.status.container_statuses[0]
-    want_previous = status.restart_count > 0
+    kwargs = dict(name=name, namespace=namespace, container=status.name, tail_lines=200)
+
+    if (status.restart_count or 0) > 0:
+        try:
+            return v1.read_namespaced_pod_log(previous=True, **kwargs), "previous"
+        except ApiException as e:
+            if e.status != 400:
+                raise
 
     try:
-        return v1.read_namespaced_pod_log(
-            name=name,
-            namespace=namespace,
-            tail_lines=200,
-            previous=want_previous,
-        )
+        return v1.read_namespaced_pod_log(**kwargs), "current"
     except ApiException as e:
-        return f"<unavailable: previous container not found ({e.status})>"
+        if e.status == 400:  # e.g. container still creating / waiting
+            return f"<unavailable: container has no logs yet ({e.reason})>", "unavailable"
+        raise
