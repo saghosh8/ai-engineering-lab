@@ -4,8 +4,7 @@ When a CI step fails, a small bot reads the log for you, finds the real
 error, and posts a plain-language diagnosis on the pull request — so
 nobody has to scroll through 4,000 lines to find one exit code.
 
-<!-- TODO: replace the link with the article URL once it is published -->
-[![Substack](https://img.shields.io/badge/%F0%9F%93%96%20READ%20THE%20ARTICLE-CA01-F5EEDC?style=for-the-badge&labelColor=1237A)](https://techworldwithsahana.substack.com/)
+[![Substack](https://img.shields.io/badge/%F0%9F%93%96%20READ%20THE%20ARTICLE-CA01-F5EEDC?style=for-the-badge&labelColor=1237A)](https://techworldwithsahana.substack.com/p/circuit-breaker-pattern-vs-rate-limiter)
 
 Understand the concepts behind this build: *Build an AI-Powered GitHub Actions Triage Bot: From Raw Logs to Root Cause.*
 

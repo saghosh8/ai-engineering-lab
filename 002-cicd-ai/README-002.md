@@ -9,7 +9,7 @@ where explaining unstructured output genuinely benefits from a model.
 
 | ID   | Project                                                                                                                              | Article |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------ | ------- |
-| CA01 | [GitHub Actions AI Triage Bot](https://github.com/saghosh8/ai-engineering-lab/tree/main/002-cicd-ai/CA01-github-actions-triage-bot) | Coming soon |
+| CA01 | [GitHub Actions AI Triage Bot](https://github.com/saghosh8/ai-engineering-lab/tree/main/002-cicd-ai/CA01-github-actions-triage-bot) | [![Read the article](https://img.shields.io/badge/%F0%9F%93%96%20READ%20THE%20ARTICLE-CA01-F5EEDC?style=for-the-badge&labelColor=1237A)](https://techworldwithsahana.substack.com/p/circuit-breaker-pattern-vs-rate-limiter) |
 
 More projects in this section are added as new articles are published.
 
