@@ -1,0 +1,12 @@
+{
+  "name": "shop-api-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tiny cart module with an intentional bug, used to demo the CA01 triage bot.",
+  "scripts": {
+    "test": "jest --ci"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
