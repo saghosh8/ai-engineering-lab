@@ -1,0 +1,85 @@
+# CA01 — CI with AI failure triage.
+#
+# GitHub only runs workflows that live in .github/workflows/ at the root of
+# a repository, so to try this: copy this file there, adjust the two paths
+# below, and add a repository secret named ANTHROPIC_API_KEY.
+#
+# What it does when a test step fails:
+#   1. the log is saved to build.log while still streaming to the Actions UI
+#   2. the bot cleans it, finds the last stack trace and asks the model why
+#   3. the diagnosis is posted on the pull request
+#   4. the job still ends red, exactly as it would without the bot
+
+name: CI with AI triage
+
+on:
+  pull_request:
+
+# The bot only reads code and writes pull request comments.
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  # Folder that contains the bot (its `src/` package and requirements.txt).
+  BOT_DIR: 002-cicd-ai/CA01-github-actions-triage-bot
+  # Folder where your tests run.
+  APP_DIR: 002-cicd-ai/CA01-github-actions-triage-bot/demo-app
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.APP_DIR }}
+        run: npm ci
+
+      # continue-on-error lets the next steps run even though this one fails.
+      # `tee` copies the output into build.log without hiding it from the UI,
+      # and PIPESTATUS[0] hands back the test command's own exit code (without
+      # it, `tee` would report success and mask the failure).
+      - name: Run tests
+        id: tests
+        continue-on-error: true
+        working-directory: ${{ env.APP_DIR }}
+        env:
+          FORCE_COLOR: "1" # same colored output you see in the Actions UI
+        run: |
+          npm test 2>&1 | tee "$GITHUB_WORKSPACE/build.log"
+          exit ${PIPESTATUS[0]}
+
+      - name: Set up Python for the triage bot
+        if: steps.tests.outcome == 'failure' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Pull requests from forks get no secrets, so the bot is skipped for
+      # them. continue-on-error: a broken bot must never hide the real failure.
+      - name: AI triage
+        if: steps.tests.outcome == 'failure' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        working-directory: ${{ env.BOT_DIR }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          pip install -q -r requirements.txt
+          python -m src.cli "$GITHUB_WORKSPACE/build.log"
+
+      # The tests step was allowed to fail so the bot could run. Fail the
+      # job now so the pull request still shows a red cross.
+      - name: Fail the job
+        if: steps.tests.outcome == 'failure'
+        run: exit 1

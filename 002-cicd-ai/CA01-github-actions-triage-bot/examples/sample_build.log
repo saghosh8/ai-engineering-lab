@@ -1,0 +1,34 @@
+
+> shop-api-demo@1.0.0 test
+> jest --ci
+
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2mtest/[22m[1mcheckout.test.js[22m
+  checkout
+    [32m✓[39m [2mtotals the line items (1 ms)[22m
+    [32m✓[39m [2madds sales tax (1 ms)[22m
+    [32m✓[39m [2mcharges shipping under the free threshold (1 ms)[22m
+    [32m✓[39m [2mgives 10% off a cart with three or more items[22m
+    [32m✓[39m [2mmakes the cheapest item free on five or more items (1 ms)[22m
+    [31m✕[39m [2mapplies discount to empty cart[22m
+
+[1m[31m  [1m● [22m[1mcheckout › applies discount to empty cart[39m[22m
+
+    TypeError: Reduce of empty array with no initial value
+        at Array.reduce (<anonymous>)
+[2m[22m
+[2m    [0m [90m 40 |[39m [36mfunction[39m applyDiscount(cart) {[22m
+[2m     [90m 41 |[39m   [36mconst[39m { items } [33m=[39m cart[33m;[39m[22m
+[2m    [31m[1m>[22m[2m[39m[90m 42 |[39m   [36mconst[39m cheapest [33m=[39m items[33m.[39mreduce((a[33m,[39m b) [33m=>[39m (a[33m.[39mprice [33m<=[39m b[33m.[39mprice [33m?[39m a [33m:[39m b))[33m;[39m[22m
+[2m     [90m    |[39m                          [31m[1m^[22m[2m[39m[22m
+[2m     [90m 43 |[39m   [36mconst[39m credit [33m=[39m itemCount(items) [33m>=[39m [35m5[39m [33m?[39m cheapest[33m.[39mprice [33m:[39m [35m0[39m[33m;[39m[22m
+[2m     [90m 44 |[39m   [36mreturn[39m round(total(items) [33m*[39m ([35m1[39m [33m-[39m bulkDiscountRate(items)) [33m-[39m credit)[33m;[39m[22m
+[2m     [90m 45 |[39m }[0m[22m
+[2m[22m
+[2m      [2mat reduce ([22m[2msrc/cart.js[2m:42:26)[22m[2m[22m
+[2m      [2mat Object.applyDiscount ([22m[2m[0m[36mtest/checkout.test.js[39m[0m[2m:29:12)[22m[2m[22m
+
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 total
+[1mTests:       [22m[1m[31m1 failed[39m[22m, [1m[32m5 passed[39m[22m, 6 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        0.36 s
+[2mRan all test suites[22m[2m.[22m
