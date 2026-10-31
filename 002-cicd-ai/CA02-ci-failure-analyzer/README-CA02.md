@@ -5,7 +5,7 @@ kind of failure it was, shows the log lines that prove it, and explains
 the likely cause in plain language — without sending the whole log to a
 model.
 
-<!-- TODO: add the article link and architecture image when published -->
+Read the full walkthrough: [Build an AI CI/CD Log Analyzer to Debug Pipeline Failures](https://techworldwithsahana.substack.com/p/build-ai-cicd-log-analyzer)
 
 ## Quick start (2 minutes, no API key)
 
