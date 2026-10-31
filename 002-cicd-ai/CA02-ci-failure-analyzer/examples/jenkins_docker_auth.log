@@ -1,0 +1,26 @@
+Started by GitHub push by dev-bot
+Running in Durability level: MAX_SURVIVABILITY
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on build-agent-02 in /var/jenkins/workspace/payments-gateway
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build image)
+[Pipeline] sh
++ docker build -t registry.example.com/acme/payments-gateway:1.14.2 .
+Successfully built 7f3c2a91b0de
+Successfully tagged registry.example.com/acme/payments-gateway:1.14.2
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push image)
+[Pipeline] sh
++ docker push registry.example.com/acme/payments-gateway:1.14.2
+The push refers to repository [registry.example.com/acme/payments-gateway]
+5f70bf18a086: Preparing
+denied: requested access to the resource is denied
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

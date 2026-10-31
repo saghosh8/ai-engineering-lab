@@ -1,0 +1,18 @@
+2026-10-30T09:15:02.0000000Z ##[group]Run actions/checkout@v4
+2026-10-30T09:15:02.0000137Z Syncing repository: acme/web-store
+2026-10-30T09:15:02.0000274Z ##[endgroup]
+2026-10-30T09:15:03.0000411Z ##[group]Run actions/setup-node@v4
+2026-10-30T09:15:03.0000548Z Found in cache @ /opt/hostedtoolcache/node/20.11.1/x64
+2026-10-30T09:15:03.0000685Z ##[endgroup]
+2026-10-30T09:15:04.0000822Z ##[group]Run npm ci
+2026-10-30T09:15:04.0000959Z npm ci
+2026-10-30T09:15:04.0001096Z shell: /usr/bin/bash -e {0}
+2026-10-30T09:15:05.0001233Z ##[endgroup]
+2026-10-30T09:15:05.0001370Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory.
+2026-10-30T09:15:05.0001507Z npm error code E404
+2026-10-30T09:15:06.0001644Z npm error 404 Not Found - GET https://registry.npmjs.org/@acme%2fui-kit - Not found
+2026-10-30T09:15:06.0001781Z npm error 404  '@acme/ui-kit@^3.2.0' is not in this registry.
+2026-10-30T09:15:06.0001918Z npm error 404 Note that you can also install from a tarball, folder, http url, or git url.
+2026-10-30T09:15:07.0002055Z npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-10-30T09_15_09_210Z-debug-0.log
+2026-10-30T09:15:07.0002192Z ##[error]Process completed with exit code 1.
+2026-10-30T09:15:07.0002329Z Post job cleanup.

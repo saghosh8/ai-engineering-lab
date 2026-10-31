@@ -1,0 +1,36 @@
+# Copy to .github/workflows/ in your repository.
+# Set WORKFLOW_NAME below to the name of the workflow you want analyzed.
+#
+# Runs after that workflow finishes. If it failed, the analyzer reads the
+# failed-step logs and writes its report to the job summary.
+name: Analyze failed CI run
+
+on:
+  workflow_run:
+    workflows: ["CI"]            # <- the name of the workflow to watch
+    types: [completed]
+
+permissions:
+  actions: read                  # lets `gh run view --log-failed` read the logs
+  contents: read
+
+jobs:
+  analyze:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      # No pull request code is checked out: this is the default branch,
+      # which holds the analyzer.
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Analyze the failed run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          python -m src.cli --gh-run "$RUN_ID" --repo "$REPO" | tee analysis.md >> "$GITHUB_STEP_SUMMARY"
