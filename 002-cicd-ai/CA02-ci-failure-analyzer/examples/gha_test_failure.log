@@ -1,0 +1,23 @@
+2026-10-30T09:15:02.0000000Z ##[group]Run actions/checkout@v4
+2026-10-30T09:15:02.0000137Z Syncing repository: acme/billing-api
+2026-10-30T09:15:02.0000274Z ##[endgroup]
+2026-10-30T09:15:03.0000411Z ##[group]Run pip install -r requirements.txt
+2026-10-30T09:15:03.0000548Z Successfully installed fastapi-0.115.0 pytest-8.3.3
+2026-10-30T09:15:03.0000685Z ##[endgroup]
+2026-10-30T09:15:04.0000822Z ##[group]Run pytest -q
+2026-10-30T09:15:04.0000959Z pytest -q
+2026-10-30T09:15:04.0001096Z shell: /usr/bin/bash -e {0}
+2026-10-30T09:15:05.0001233Z ##[endgroup]
+2026-10-30T09:15:05.0001370Z ..........F.....                                                         [100%]
+2026-10-30T09:15:05.0001507Z =================================== FAILURES ===================================
+2026-10-30T09:15:06.0001644Z __________________________ test_invoice_total_with_tax __________________________
+2026-10-30T09:15:06.0001781Z     def test_invoice_total_with_tax():
+2026-10-30T09:15:06.0001918Z         invoice = make_invoice(items=[Item(price=100), Item(price=50)], tax_rate=0.2)
+2026-10-30T09:15:07.0002055Z >       assert invoice.total() == 180
+2026-10-30T09:15:07.0002192Z E       AssertionError: assert 150.0 == 180
+2026-10-30T09:15:07.0002329Z E        +  where 150.0 = <bound method Invoice.total of <Invoice items=2>>()
+2026-10-30T09:15:08.0002466Z tests/test_invoice.py:42: AssertionError
+2026-10-30T09:15:08.0002603Z =========================== short test summary info ============================
+2026-10-30T09:15:08.0002740Z FAILED tests/test_invoice.py::test_invoice_total_with_tax - AssertionError: assert 150.0 == 180
+2026-10-30T09:15:09.0002877Z ========================= 1 failed, 15 passed in 2.31s =========================
+2026-10-30T09:15:09.0003014Z ##[error]Process completed with exit code 1.

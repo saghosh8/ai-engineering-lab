@@ -1,0 +1,31 @@
+Started by user ravi
+Running in Durability level: MAX_SURVIVABILITY
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on build-agent-04 in /var/jenkins/workspace/orders-service
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] checkout
+Cloning repository https://git.example.com/acme/orders-service.git
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] sh
++ mvn -B clean verify
+[INFO] Scanning for projects...
+[INFO] Building orders-service 2.8.0-SNAPSHOT
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ orders-service ---
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ orders-service ---
+[INFO] Running com.acme.orders.OrderServiceIT
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 41.7 s <<< ERROR!
+java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.util.Arrays.copyOf(Arrays.java:3537)
+	at com.acme.orders.ReportBuilder.build(ReportBuilder.java:88)
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.1.2:test (default-test) on project orders-service: There are test failures.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

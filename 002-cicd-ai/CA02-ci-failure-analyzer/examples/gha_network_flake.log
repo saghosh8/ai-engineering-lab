@@ -1,0 +1,14 @@
+2026-10-30T09:15:02.0000000Z ##[group]Run actions/setup-node@v4
+2026-10-30T09:15:02.0000137Z Found in cache @ /opt/hostedtoolcache/node/20.11.1/x64
+2026-10-30T09:15:02.0000274Z ##[endgroup]
+2026-10-30T09:15:03.0000411Z ##[group]Run npm ci
+2026-10-30T09:15:03.0000548Z npm ci
+2026-10-30T09:15:03.0000685Z ##[endgroup]
+2026-10-30T09:15:04.0000822Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2026-10-30T09:15:04.0000959Z npm error code ETIMEDOUT
+2026-10-30T09:15:04.0001096Z npm error syscall connect
+2026-10-30T09:15:05.0001233Z npm error errno ETIMEDOUT
+2026-10-30T09:15:05.0001370Z npm error network request to https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz failed, reason: connect ETIMEDOUT 104.16.2.35:443
+2026-10-30T09:15:05.0001507Z npm error network This is a problem related to network connectivity.
+2026-10-30T09:15:06.0001644Z npm error network In most cases you are behind a proxy or have bad network settings.
+2026-10-30T09:15:06.0001781Z ##[error]Process completed with exit code 1.
