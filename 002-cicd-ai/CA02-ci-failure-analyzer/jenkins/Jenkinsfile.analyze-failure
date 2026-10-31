@@ -1,0 +1,42 @@
+// A separate Jenkins pipeline job that analyzes a failed build.
+//
+// Setup:
+//   1. Copy this project (src/ and requirements.txt) to the agent that runs
+//      this job, and run the job from that folder (or check it out here).
+//   2. Create Jenkins credentials:
+//        anthropic-api-key  (Secret text)
+//        jenkins-api-token  (Username with password: your user + an API token)
+//   3. In the pipeline you want to watch, add:
+//        post { failure {
+//          build job: 'analyze-failure', wait: false,
+//                parameters: [string(name: 'FAILED_BUILD_URL', value: env.BUILD_URL)]
+//        } }
+//
+// The watched build may still be finishing when this job starts, so the last
+// few log lines can be missing. The analyzer works on what it can read.
+pipeline {
+  agent any
+  parameters {
+    string(name: 'FAILED_BUILD_URL', defaultValue: '', description: 'URL of the failed build')
+  }
+  stages {
+    stage('Analyze') {
+      steps {
+        withCredentials([
+          string(credentialsId: 'anthropic-api-key', variable: 'ANTHROPIC_API_KEY'),
+          usernamePassword(credentialsId: 'jenkins-api-token',
+                           usernameVariable: 'JENKINS_USER', passwordVariable: 'JENKINS_TOKEN')
+        ]) {
+          // Single quotes: the shell expands the variable, Groovy never splices it into the command.
+          sh '''
+            python3 -m venv .venv
+            . .venv/bin/activate
+            pip install -q -r requirements.txt
+            python -m src.cli --jenkins-url "$FAILED_BUILD_URL" | tee analysis.md
+          '''
+        }
+        archiveArtifacts artifacts: 'analysis.md', allowEmptyArchive: true
+      }
+    }
+  }
+}

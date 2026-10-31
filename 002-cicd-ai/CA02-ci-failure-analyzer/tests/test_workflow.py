@@ -36,5 +36,24 @@ def test_values_reach_the_script_through_env():
     assert '"$RUN_ID"' in step["run"] and '"$REPO"' in step["run"]
 
 
+def test_analyzer_step_runs_in_bash_with_pipefail_and_the_configured_folder():
+    steps = load()["jobs"]["analyze"]["steps"]
+    step = next(s for s in steps if s.get("name") == "Analyze the failed run")
+    assert step["shell"] == "bash"
+    assert all(s["working-directory"] == "${{ env.ANALYZER_DIR }}" for s in steps if "run" in s)
+    assert "ANALYZER_DIR" in load()["env"]
+
+
 def test_no_pull_request_target():
     assert "pull_request_target" not in WORKFLOW.read_text().split("\n", 6)[-1]
+
+
+JENKINSFILE = WORKFLOW.parent.parent / "jenkins" / "Jenkinsfile.analyze-failure"
+
+
+def test_jenkinsfile_passes_the_url_to_the_shell_not_to_groovy():
+    text = JENKINSFILE.read_text()
+    assert "python -m src.cli --jenkins-url \"$FAILED_BUILD_URL\"" in text
+    assert "sh '''" in text                       # single-quoted: no Groovy interpolation
+    assert "${params." not in text and "${FAILED_BUILD_URL}" not in text
+    assert "withCredentials" in text and "ANTHROPIC_API_KEY" in text

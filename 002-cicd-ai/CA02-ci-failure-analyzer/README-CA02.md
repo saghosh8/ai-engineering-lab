@@ -7,6 +7,21 @@ model.
 
 <!-- TODO: add the article link and architecture image when published -->
 
+## Quick start (2 minutes, no API key)
+
+```
+git clone https://github.com/saghosh8/ai-engineering-lab.git
+cd ai-engineering-lab/002-cicd-ai/CA02-ci-failure-analyzer
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python examples/demo.py --no-llm
+```
+
+You should see a table with the likely failure for each of the five sample
+logs. Python 3.11 and 3.13 were used to test this project. All commands in
+this README are run from this folder (`CA02-ci-failure-analyzer`).
+
 ## What this is
 
 A small Python CLI. It reads a log from a file, a GitHub Actions run or a
@@ -21,6 +36,10 @@ $ python -m src.cli examples/jenkins_docker_auth.log
 **CI:** Jenkins · **Failed step:** Push image
 ...
 ```
+
+The `confidence` part and the *Interpretation (AI)* section appear only when
+`ANTHROPIC_API_KEY` is set. Without a key you get the rule-based part alone,
+and the report says so.
 
 - **Input:** a saved log (or `-` for stdin), a GitHub Actions run id, or a Jenkins build URL
 - **Processing (deterministic):** strip colors, timestamps and progress bars,
@@ -98,7 +117,9 @@ CA02-ci-failure-analyzer/
 │   ├── sources.py      # file, stdin, `gh run view`, Jenkins consoleText
 │   └── cli.py          # entry point
 ├── workflow/
-│   └── ca02-analyze-failed-run.yml   # copy to .github/workflows/
+│   └── ca02-analyze-failed-run.yml   # GitHub Actions: copy to .github/workflows/
+├── jenkins/
+│   └── Jenkinsfile.analyze-failure   # Jenkins: a job that analyzes a failed build
 ├── tests/              # pytest, no network, CI server or API key needed
 ├── examples/           # five sample logs + demo script
 │   ├── gha_dependency_404.log
@@ -122,7 +143,17 @@ cp .env.example .env              # fill in ANTHROPIC_API_KEY
 
 ## Try it locally
 
-The sample logs are synthetic: realistic in shape, with made-up names.
+The sample logs in `examples/` are synthetic: realistic in shape, with
+made-up names. Each one shows a different case, and the table is what the
+tool reports for it (checked by the tests):
+
+| File | CI | What happened | Likely failure | Failed step |
+| ---- | -- | ------------- | -------------- | ----------- |
+| `gha_dependency_404.log` | GitHub Actions | `npm ci` cannot find a package | Dependency could not be installed | Run npm ci |
+| `gha_test_failure.log` | GitHub Actions | a pytest assertion fails | Test failure | Run pytest -q |
+| `gha_network_flake.log` | GitHub Actions | `npm ci` times out on the registry | Network or registry problem | Run npm ci |
+| `jenkins_out_of_memory.log` | Jenkins | the test JVM runs out of heap, then the test fails | Out of memory (it outranks the test failure) | Build |
+| `jenkins_docker_auth.log` | Jenkins | `docker push` is denied | Authentication or permission error | Push image |
 
 ```
 python examples/demo.py --no-llm     # rule-based only, no API key needed
@@ -163,13 +194,30 @@ python -m src.cli --jenkins-url https://ci.example.com/job/app/42/
 It fetches `<url>/consoleText`. For a private Jenkins set `JENKINS_USER`
 and `JENKINS_TOKEN` (a user API token) in `.env`.
 
-**Automatically, after a GitHub Actions failure**
+### Run it automatically
 
-Copy `workflow/ca02-analyze-failed-run.yml` to `.github/workflows/`, set
-the name of the workflow to watch, and add the `ANTHROPIC_API_KEY`
-repository secret. When that workflow fails, the report appears in the
-analysis job's summary. The analyzer must live in your repository (copy
-`src/` and `requirements.txt`).
+**GitHub Actions: after any failed run**
+
+1. Copy `src/` and `requirements.txt` into your repository, for example
+   into `tools/ci-analyzer/`.
+2. Copy `workflow/ca02-analyze-failed-run.yml` to `.github/workflows/`.
+   Set `ANALYZER_DIR` to the folder from step 1, and change
+   `workflows: ["CI"]` to the name of the workflow you want to watch.
+3. Add a repository secret named `ANTHROPIC_API_KEY`
+   (Settings → Secrets and variables → Actions).
+4. Merge it to your default branch. GitHub starts `workflow_run`
+   workflows from the default branch only.
+
+When the watched workflow fails, the report appears in the *Summary* of the
+analysis job.
+
+**Jenkins: a separate job that analyzes the failed build**
+
+`jenkins/Jenkinsfile.analyze-failure` is a pipeline job that takes the URL
+of a failed build and runs the analyzer on it. The comments at the top of
+the file list the three setup steps: the two Jenkins credentials to create
+and the `post { failure { build job: ... } }` block to add to the pipeline
+you want to watch. The report is saved as the build artifact `analysis.md`.
 
 ## Configuration
 
@@ -182,6 +230,18 @@ analysis job's summary. The analyzer must live in your repository (copy
 
 CLI flags: `--ci auto|github-actions|jenkins`, `--format md|json`,
 `--no-llm`, `--model <name>`.
+
+## Troubleshooting
+
+| You see | What it means |
+| ------- | ------------- |
+| `Not available: ANTHROPIC_API_KEY is not set` | no key found; set it in `.env` or the environment, or use `--no-llm` on purpose |
+| `Not available: model call failed (AuthenticationError)` | the key is wrong, or still the placeholder from `.env.example` |
+| `Not available: model output rejected: ...` | the model replied in a shape we do not accept; run again, or use the rule-based part |
+| `error: gh failed: ...` | `gh` is not logged in, or has no access to that repository |
+| `error: could not fetch the Jenkins log (...)` | wrong URL, Jenkins not reachable, or credentials needed: set `JENKINS_USER` and `JENKINS_TOKEN` |
+| `Likely failure: Cause not identified` | no pattern matched; add yours to `src/signatures.py` |
+| `No failure signal found in this log` | the log shows no error, so nothing was sent to the model |
 
 ## Running the tests
 
@@ -228,11 +288,12 @@ workflow file's trigger, permissions and shell safety.
 - Flaky detection is the model's judgement from one log. There is no
   history of past runs.
 - The model call is covered by tests with a fake client. Run
-  `examples/demo.py` with your key to see it live; the workflow file has
-  not been run on GitHub.
-- Running the analyzer from inside a Jenkins `post { failure { ... } }`
-  block reads a log that is still being written, so the last lines can be
-  missing. A downstream job that runs after the build avoids this.
+  `examples/demo.py` with your key to see it live.
+- The GitHub workflow, the Jenkinsfile and the `gh` log format that
+  `--gh-run` expects are tested against sample text, not against a live
+  GitHub run or a live Jenkins. Try them on a test repository first.
+- The Jenkins job starts while the failed build may still be finishing, so
+  the last few log lines can be missing.
 - Redaction is regex-based: a safety net, not a guarantee. Add your own
   token formats and internal hostnames before using it on private logs.
 - Cost is bounded: one call per failed run, about 55 lines in, 600 tokens

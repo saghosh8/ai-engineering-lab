@@ -1,8 +1,16 @@
 # Copy to .github/workflows/ in your repository.
-# Set WORKFLOW_NAME below to the name of the workflow you want analyzed.
 #
-# Runs after that workflow finishes. If it failed, the analyzer reads the
-# failed-step logs and writes its report to the job summary.
+# Before you use it:
+#   1. Copy this project (src/ and requirements.txt) into your repository
+#      and set ANALYZER_DIR below to that folder.
+#   2. Change `workflows: ["CI"]` to the name of the workflow to watch.
+#   3. Add the repository secret ANTHROPIC_API_KEY.
+#
+# GitHub only starts a workflow_run workflow from the default branch, so
+# merge this file there before testing it.
+#
+# It runs after the watched workflow finishes. If that run failed, the
+# analyzer reads the failed-step logs and writes its report to the job summary.
 name: Analyze failed CI run
 
 on:
@@ -13,6 +21,9 @@ on:
 permissions:
   actions: read                  # lets `gh run view --log-failed` read the logs
   contents: read
+
+env:
+  ANALYZER_DIR: tools/ci-analyzer   # <- where you copied src/ and requirements.txt
 
 jobs:
   analyze:
@@ -25,8 +36,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - name: Install
+        working-directory: ${{ env.ANALYZER_DIR }}
+        run: pip install -r requirements.txt
       - name: Analyze the failed run
+        working-directory: ${{ env.ANALYZER_DIR }}
+        shell: bash                # bash with pipefail: a failed analyzer fails the step
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GH_TOKEN: ${{ github.token }}
