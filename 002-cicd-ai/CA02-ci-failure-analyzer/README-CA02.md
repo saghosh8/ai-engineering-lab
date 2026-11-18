@@ -7,6 +7,8 @@ model.
 
 Read the full walkthrough: [Build an AI CI/CD Log Analyzer to Debug Pipeline Failures](https://techworldwithsahana.substack.com/p/build-ai-cicd-log-analyzer)
 
+![CA02 architecture](../images/CA02-architecture.png)
+
 ## Quick start (2 minutes, no API key)
 
 ```
