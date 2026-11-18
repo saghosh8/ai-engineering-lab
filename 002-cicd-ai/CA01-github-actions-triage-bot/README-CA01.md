@@ -8,9 +8,7 @@ nobody has to scroll through 4,000 lines to find one exit code.
 
 Understand the concepts behind this build: *Build an AI-Powered GitHub Actions Triage Bot: From Raw Logs to Root Cause.*
 
-<!-- TODO: add the architecture image, then uncomment:
-[![CA01 architecture](https://github.com/saghosh8/ai-engineering-lab/raw/main/002-cicd-ai/images/CA01.jpg)](/saghosh8/ai-engineering-lab/blob/main/002-cicd-ai/images/CA01.jpg)
--->
+![CA01 architecture](../images/CA01-architecture.png)
 
 ## What this is
 

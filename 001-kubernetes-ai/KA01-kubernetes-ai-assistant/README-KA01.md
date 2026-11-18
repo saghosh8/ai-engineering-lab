@@ -10,7 +10,7 @@ hypotheses — evidence and interpretation kept clearly separate.
 
 Understand the concepts behind this build: *Your Pod Keeps Crashing. What If an LLM Could Read the Logs Before You Do?*
 
-![KA01 architecture](../images/KA01.jpg)
+![KA01 architecture](../images/KA01-architecture.png)
 
 ## What this is
 
